@@ -1,0 +1,134 @@
+/*  const handleUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["application/pdf", "application/msword", "text/plain"],
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        Alert.alert("No File Selected", "You canceled the document selection.");
+      } else if (result.assets?.length > 0) {
+        const file = result.assets[0];
+        setFileSelected(true);
+        setFileName(file.name);
+        Alert.alert("File Selected", `You selected: ${file.name}`);
+      } else {
+        setFileSelected(true);
+        setFileName(result.name);
+        Alert.alert("File Selected", `You selected: ${result.name}`);
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while picking the document.");
+      console.error(error);
+    }
+  };*/
+
+
+
+   /* const handleProcessDocument = () => {
+    if(!fileSelected || !selectedVoice){
+      Alert.alert("Missing Selection", "Please select a document and a voice before proceeding.")
+      return;
+    }
+    try{
+      setIsLoading(true); 
+      const result = await DocumentPicker.getDocumentAsync({
+        type:["appication/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"],
+        copyToCacheDirectory: true,
+      });
+      if(result.canceled){
+        Alert.alert("No File Selected", "You canceled the document selection.");
+        return;
+      }
+
+      const file = result.assets?.[0];
+      if(!file){
+        Alert.alert("Error","Could not retrieve file.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file",{
+        uri:file.uri,
+        type:file.mimetype || "application/octet-stream",
+        name:file.name || "document",
+      });
+      formData.append("voice",selectedVoice);
+
+      const response = await fetch(`${API_BASE_URL}//process-text-doc`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: formData,
+      });
+
+      if(response.ok){
+        throw new Error("Failed to process document");
+      }
+
+
+    }
+
+    navigation.navigate("UD2Screen",{fileName,selectedVoice});
+  };*/
+
+
+
+
+  // Fetch user audio files on mount
+/*  useEffect(() => {
+    const fetchAudioFiles = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) return;
+
+        const response = await fetch(`${API_BASE_URL}/get-user-audio`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+
+const files = [
+  ...result.generatedAudio.map((item) => ({
+    id: item._id,
+    title: item.fileName,
+    uri: item.fileUri,
+    type: "generated",
+    userId: result.userId // assuming backend returns it
+    
+  })),
+  ...result.clonedAudio.map((item) => ({
+    id: item._id,
+    title: item.fileName + " (cloned)",
+    uri: item.fileUri,
+    type: "cloned",
+    userId: result.userId
+  })),
+];
+setAudioFiles(files);
+        } else {
+          Alert.alert("Error", "Failed to fetch audio files.");
+        }
+      } catch (error) {
+        console.error("Error fetching audio files:", error);
+      }
+    };
+
+    fetchAudioFiles();
+  }, []);*/
+
+
+
+
+
+
+
+
+
+
+
+  
