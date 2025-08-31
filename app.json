@@ -4,32 +4,30 @@
     "slug": "d2v",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/splash-icon.png",
+    "icon": "./assets/app_icon.png",
     "android": {
-      "icon": "./assets/icon.png"
+      "package": "com.d2vapp.d2v"
     },
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/app_icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true
     },
-      "package": "com.d2vapp.d2v"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-asset"
-    ],
     "extra": {
       "eas": {
         "projectId": "324a2d0f-cf94-4acf-8f2b-987591b5ba29"
       }
     }
+  },
+  "web": {
+    "favicon": "./assets/favicon.png"
+  },
+  "plugins": [
+    "expo-asset"
+  ]
 }
-
