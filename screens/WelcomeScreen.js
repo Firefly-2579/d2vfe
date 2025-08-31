@@ -10,7 +10,7 @@ const SecondScreen = ({ navigation }) => {
         </Text>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/logo.webp')} // Replace with your logo path
+            source={require('../assets/logo.webp')} 
             style={styles.logo}
           />
         </View>
@@ -18,14 +18,14 @@ const SecondScreen = ({ navigation }) => {
       <View style={styles.bottomSection}>
         <TouchableOpacity
           style={styles.signInButton}
-          onPress={() => navigation.navigate('SigninScreen')} // Replace with your Sign In navigation
+          onPress={() => navigation.navigate('SigninScreen')} 
         >
           <Text style={styles.buttonText}>Sign In</Text>
           <Text style={styles.arrow}>→</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.signUpButton}
-          onPress={() => navigation.navigate('SignupScreen')} // Replace with your Sign Up navigation
+          onPress={() => navigation.navigate('SignupScreen')} 
         >
           <Text style={styles.buttonText}>Sign Up</Text>
           <Text style={styles.arrow}>→</Text>
@@ -38,7 +38,7 @@ const SecondScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D3D3D3', // Light gray background
+    backgroundColor: '#D3D3D3', 
   },
   topSection: {
     flex: 3,
@@ -50,11 +50,11 @@ const styles = StyleSheet.create({
     flex: 0.1,
     fontSize: 20,
     textAlign: 'center',
-    color: '#4B0082', // Purple text
+    color: '#4B0082', 
     marginBottom: 20,
   },
   highlight: {
-    color: '#6A0DAD', // Bright purple for "Document to voice"
+    color: '#6A0DAD', 
     fontWeight: 'bold',
   },
   logoContainer: {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
      borderWidth: 2,
-    backgroundColor: '#6A0DAD', // Purple button
+    backgroundColor: '#6A0DAD', 
     borderRadius: 30,
     paddingVertical: 15,
     paddingHorizontal: 40,
@@ -103,11 +103,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#FFFFFF', // White text for Sign In
+    color: '#FFFFFF', 
   },
   arrow: {
     fontSize: 20,
-    color: '#FFFFFF', // White arrow
+    color: '#FFFFFF', 
   },
 });
 

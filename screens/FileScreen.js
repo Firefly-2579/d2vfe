@@ -23,7 +23,6 @@ const AudioPanel = ({route}) => {
   const [audioFiles, setAudioFiles] = useState([]);
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  //const [currentUri, setCurrentUri] = useState(null);
   const [currentPlayingId, setCurrentPlayingId] = useState(null);
 
   useEffect(() => {
@@ -73,7 +72,6 @@ useFocusEffect(
         console.error("Error fetching audio files:", error);
       }
     };
-
     fetchAudioFiles();
   }, [])
 );
@@ -86,12 +84,11 @@ const handleDelete = async (userId, type, id) => {
   const result = await res.json();
   if (result.success) {
     Alert.alert("Deleted!", "Audio removed successfully.");
-    setAudioFiles(audioFiles.filter(a => a.id !== id)); // match key name here
+    setAudioFiles(audioFiles.filter(a => a.id !== id)); 
   } else {
     Alert.alert("Error", result.message);
   }
 };
-
 
 const handleExport = async (cloudUri, fileName) => {
   try {
@@ -121,10 +118,8 @@ const handleExport = async (cloudUri, fileName) => {
   }
 };
 
-
 const handlePlay = async (id, uri) => {
   try {
-    // If this audio is already playing, pause it
     if (sound && currentPlayingId === id) {
       const status = await sound.getStatusAsync();
       if (status.isPlaying) {
@@ -137,7 +132,6 @@ const handlePlay = async (id, uri) => {
       return;
     }
   
-    // If a different audio is playing, stop it
     if (sound) {
       await sound.stopAsync();
       await sound.unloadAsync();
@@ -145,7 +139,6 @@ const handlePlay = async (id, uri) => {
       setIsPlaying(false);
     }
 
-    // Play new audio
     const { sound: newSound } = await Audio.Sound.createAsync(
       { uri },
       { shouldPlay: true }
@@ -168,7 +161,6 @@ const handlePlay = async (id, uri) => {
     console.error("Error playing audio:", error);
   }
 };
-
 
   const renderEmptyMessage = () => (
     <View style={styles.emptyContainer}>
@@ -206,7 +198,6 @@ const handlePlay = async (id, uri) => {
           <Ionicons name="download" size={24} color="#008000" />
         </TouchableOpacity>
 
-        
       </View>
     </LinearGradient>
   )}
@@ -215,7 +206,6 @@ const handlePlay = async (id, uri) => {
 />
   )}
 
-// Main Screen
 const FileScreen = ({route}) => {
   return (
     <LinearGradient
@@ -228,7 +218,6 @@ const FileScreen = ({route}) => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

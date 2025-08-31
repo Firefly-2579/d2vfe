@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView, StyleSheet, ActivityIndicator, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,17 +10,25 @@ import API_BASE_URL from "../config";
 const AccountScreen = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState("");
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState("");
+  const [usernameVerify, setUsernameVerify] = useState(true);
   
   const [newPassword, setNewPassword] = useState('');
+  const [newPasswordVisible, setNewPasswordVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  
   const [showPasswordField, setShowPasswordField] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  
   
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
   const [oldPassword, setOldPassword] = useState('');
+  const [oldPasswordVisible, setOldPasswordVisible] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+   const [loadingSo, setLoadingSo] = useState(false);
 
   async function getData() {
     const token = await AsyncStorage.getItem('token');
@@ -38,22 +46,39 @@ const AccountScreen = () => {
 
   useEffect(() => { getData(); }, []);
 
-  function signOut() {
+  function handleName(nameVar) {
+  setUsername(nameVar);
+  setUsernameVerify(false);
+
+  const usernameRegex = /^(?=.{3,20}$)(?=.*[A-Za-z])[A-Za-z0-9_]+$/;
+
+  if (nameVar.length >= 3 && usernameRegex.test(nameVar)) {
+    setUsernameVerify(true);
+  }
+}
+
+async function signOut() {
+    try {
+    setLoadingSo(true);
+    await AsyncStorage.removeItem('isSignedIn'); 
+    await AsyncStorage.removeItem('token');
+    await AsyncStorage.setItem('isSignedIn', '');
+    await AsyncStorage.setItem('token', '');
+    
     navigation.reset({ index: 0, routes: [{ name: 'WelcomeScreen' }] });
-    AsyncStorage.setItem('isSignedIn', '');
-    AsyncStorage.setItem('token', '');
+  } finally {
+    setLoadingSo(false);
+  }
   }
 
-
   const isValidPassword = (password) => {
-    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
     return regex.test(password);
   };
 
-
   const handlePasswordReset = async () => {
   if (!isValidPassword(newPassword)) {
-    Alert.alert('Invalid Password', 'Must be 6 or more characters. Uppercase, Lowercase and numbers must be included.');
+    Alert.alert('Invalid Password', 'Must be 8 or more characters. Uppercase, lowercase, special character and number must be included.');
     return;
   }
 
@@ -63,6 +88,7 @@ const AccountScreen = () => {
   }
 
   try {
+    setLoading(true);
     const token = await AsyncStorage.getItem('token');
     const response = await axios.post(`${API_BASE_URL}/resets-password`, {
       token,
@@ -73,18 +99,27 @@ const AccountScreen = () => {
     if (response.data.success) {
       Alert.alert('Success', 'Password has been updated.');
       setShowPasswordField(false);
+      setConfirmPasswordVisible(false);
+      setNewPasswordVisible(false);
+      setOldPasswordVisible(false);
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      setIsEditing(false); 
+      setLoading(false);
     } else {
       Alert.alert('Error', response.data.message || 'Password reset failed.');
+      setLoading(false);
     }
   } catch (error) {
+    setLoading(false);
     console.error('Password Reset Error:', error);
-    // ✅ Show backend error message if available
+
     if (error.response && error.response.data && error.response.data.message) {
+      setLoading(false);
       Alert.alert('Error', error.response.data.message);
     } else {
+      setLoading(false);
       Alert.alert('Error', 'Something went wrong.');
     }
   }
@@ -92,6 +127,12 @@ const AccountScreen = () => {
 
   const handleSaveChanges = async () => {
     try {
+      if(!usernameVerify){
+        Alert.alert("Invalid Username.Please enter valid username before saving.");
+        return;
+      }
+
+
       const token = await AsyncStorage.getItem('token');
       const isUsernameChanged = username !== userData.username;
 
@@ -109,7 +150,9 @@ const AccountScreen = () => {
       setIsEditing(false);
       setShowPasswordField(false);
       setNewPassword('');
-      setPasswordVisible(false);
+      setConfirmPasswordVisible(false);
+      setNewPasswordVisible(false);
+      setOldPasswordVisible(false);
     } catch (err) {
       console.error(err);
       Alert.alert('Error', 'Failed to save changes.');
@@ -166,9 +209,14 @@ const AccountScreen = () => {
           <TextInput
             style={styles.inputField}
             value={username}
-            onChangeText={setUsername}
+            onChangeText={handleName}
             editable={isEditing}
           />
+          {!usernameVerify && (
+            <Text style={{ color : "red", marginTop:4 }}>
+              Username must be 3-20 characters and contain only numbers,underscores or letters with atleast one letter present.
+            </Text>
+          )}
         </View>
 
         <View style={styles.inputContainer}>
@@ -187,12 +235,12 @@ const AccountScreen = () => {
                 value={oldPassword}
                 onChangeText={setOldPassword}
                 placeholder="Old password"
-                secureTextEntry={!passwordVisible}
+                secureTextEntry={!oldPasswordVisible}
               />
-              <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.eyeButton}>
+              <TouchableOpacity onPress={() => setOldPasswordVisible(!oldPasswordVisible)} style={styles.eyeButton}>
                 <Image
                   source={
-                    passwordVisible
+                    oldPasswordVisible
                       ? require('../assets/icons8-eye-30.png')
                       : require('../assets/icons8-hide-30.png')
                   }
@@ -207,12 +255,12 @@ const AccountScreen = () => {
                 value={newPassword}
                 onChangeText={setNewPassword}
                 placeholder="New password"
-                secureTextEntry={!passwordVisible}
+                secureTextEntry={!newPasswordVisible}
               />
-              <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.eyeButton}>
+              <TouchableOpacity onPress={() => setNewPasswordVisible(!newPasswordVisible)} style={styles.eyeButton}>
                 <Image
                   source={
-                    passwordVisible
+                    newPasswordVisible
                       ? require('../assets/icons8-eye-30.png')
                       : require('../assets/icons8-hide-30.png')
                   }
@@ -227,12 +275,12 @@ const AccountScreen = () => {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder="Confirm Password"
-                secureTextEntry={!passwordVisible}
+                secureTextEntry={!confirmPasswordVisible}
               />
-              <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.eyeButton}>
+              <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} style={styles.eyeButton}>
                 <Image
                   source={
-                    passwordVisible
+                    confirmPasswordVisible
                       ? require('../assets/icons8-eye-30.png')
                       : require('../assets/icons8-hide-30.png')
                   }
@@ -240,20 +288,21 @@ const AccountScreen = () => {
                 />
               </TouchableOpacity>
             </View>
-
-
-
+            
             <View style={styles.buttonRow}>
-  <TouchableOpacity onPress={handlePasswordReset} style={[styles.saveButton, { flex: 1, marginRight: 5 }]}>
-    <Text style={styles.saveButtonText}>Confirm</Text>
+  <TouchableOpacity disabled={loading} onPress={handlePasswordReset} style={[styles.saveButton, { flex: 1, marginRight: 5 }]}>
+    {loading ? (<ActivityIndicator color="#6A0DAD" />) : (<Text style={styles.saveButtonText}>Confirm</Text>)}
   </TouchableOpacity>
 
   <TouchableOpacity
     onPress={() => {
+      setIsEditing(false); 
       setShowPasswordField(false);
+      setConfirmPasswordVisible(false);
+      setNewPasswordVisible(false);
+      setOldPasswordVisible(false);
       setNewPassword('');
       setConfirmPassword('');
-      setPasswordVisible(false);
     }}
     style={[styles.saveButton, { flex: 1, marginLeft: 5 }]}
   >
@@ -280,14 +329,13 @@ const AccountScreen = () => {
         )}
 
         <TouchableOpacity onPress={signOut} style={styles.editButton}>
-          <Text style={styles.editButtonText}>Sign Out</Text>
+          {loadingSo ? (<ActivityIndicator color="#6A0DAD" />) : (<Text style={styles.editButtonText}>Sign Out</Text>)}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleDeleteAccount} style={styles.editButton}>
           <Text style={styles.editButtonText}>Delete Account</Text>
         </TouchableOpacity>
 
-        
       </ScrollView>
     </LinearGradient>
   );

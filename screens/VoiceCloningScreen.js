@@ -8,8 +8,6 @@ const VoiceCloningScreen = ({}) => {
 
   return (
     <LinearGradient colors={['#EAD1DC', '#DCC6E0', '#C7CEEA']} style={styles.container}>
-      
-
       <View style={styles.body}>
         <View style={styles.voiceClone}>
           <Text style={styles.voiceCloneText}>Voice Cloning</Text>
@@ -21,8 +19,6 @@ const VoiceCloningScreen = ({}) => {
           <Text style={styles.buttonText}>+ Create a New Clone</Text>
         </TouchableOpacity>
       </View>
-
-      
     </LinearGradient>
   );
 };
@@ -30,8 +26,7 @@ const VoiceCloningScreen = ({}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  
+  }, 
   body: {
     flex: 1,
     alignItems: 'center',
@@ -64,7 +59,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
   },
-  
 });
 
 export default VoiceCloningScreen;

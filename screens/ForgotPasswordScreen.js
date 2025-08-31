@@ -18,7 +18,6 @@ const ForgotPasswordScreen = () => {
   } else {
     setEmailError("Invalid Email Format");
   }
-  
 }; 
 
 const handleForgotPassword = () => {
@@ -26,9 +25,7 @@ const handleForgotPassword = () => {
     showAlert("Alert", "Please provide valid email address.");
 return;
   }
- 
   setLoading(true);
-
   axios
   .post(`${API_BASE_URL}/forgot-password`,{email})
   .then((res)=>{
@@ -48,7 +45,6 @@ return;
 const showAlert = (title,message) => {
   Alert.alert(title, message);
 };
-  
 
   useEffect(() => {
     const backAction = () => {

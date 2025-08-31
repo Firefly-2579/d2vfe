@@ -40,7 +40,8 @@ const SignupScreen = () => {
   function handleName(nameVar) {
     setUsername(nameVar);
     setUsernameVerify(false)
-    if (nameVar.length > 1) {
+    const usernameRegex = /^(?=.{3,20}$)(?=.*[A-Za-z])[A-Za-z0-9_]+$/;
+    if ((nameVar.length >= 3) &&(usernameRegex.test(nameVar))) {
       setUsernameVerify(true);
     } else {
       setUsernameVerify(false);
@@ -58,15 +59,13 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
   function handlePassword(passwordVar){
     setPassword(passwordVar);
     setPasswordVerify(false);
-    if( /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(passwordVar)){
+    if (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(passwordVar)){
       setPassword(passwordVar);
       setPasswordVerify(true);
     }
     }
 
     const handleSignup = async () => {
-      const userData = { username, email, password };
-    
       if (!usernameVerify || !emailVerify || !passwordVerify) {
         return Alert.alert("Fill mandatory details");
       }
@@ -74,19 +73,24 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
       if (!otpSent) {
         console.log("Email entered", email);
         try {
+          setLoading(true);
           const response = await axios.post(`${API_BASE_URL}/send-otp`, {email});
           console.log("respone:", response.data);
           if (response.data.status === "success") {
             setOtpSent(true);
+            setLoading(false);
             setShowOtpInput(true);
+            
             if (response.data.success) {
-              setShowOtpInput(true); // you control OTP input visibility with this state
+              setShowOtpInput(true); 
             }
+
             Alert.alert("OTP sent to your email.");
           } else {
             Alert.alert("Failed to send OTP. Try again.");
           }
         } catch (error) {
+          setLoading(false);
           console.error(error);
           console.log("error", error.response?.data || error.message);
           Alert.alert("User aleady exists with this email!");
@@ -96,7 +100,7 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
           const response = await axios.post(`${API_BASE_URL}/verify-for-email`, { email, otp });
           if (response.data.status === "success") {
             setEmailVerified(true);
-            createAccount(); // Call actual signup
+            createAccount(); 
           } else {
             Alert.alert("Invalid OTP. Please try again.");
           }
@@ -113,21 +117,28 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
         const userData = { username, email, password };
         const res = await axios.post(`${API_BASE_URL}/signup`, userData);
         setLoading(false);
-    
         if (res.data.status === "ok") {
           Alert.alert("Registration Successful!");
           navigation.navigate("SigninScreen");
         } else {
-          Alert.alert("Signup failed.");
+          Alert.alert("Username should be unique!");
+          setShowOtpInput(false);
+          setOtpSent(false);
+          setEmailVerified(false);
+          setUsername('');
+          setEmail('');
+          setPassword('');
+          setOtp('');
         }
       } catch (e) {
         setLoading(false);
         console.log(e);
         Alert.alert("Something went wrong.");
+        setShowOtpInput(false);
+        setOtpSent(false);
+        setEmailVerified(false);
       }
     };
-
-
 
   useEffect(() => {
     const backAction = () => {
@@ -139,7 +150,6 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
     return () => backHandler.remove();
   }, [navigation]);
 
-  
 
   return (
     <View style={styles.container}>
@@ -165,7 +175,7 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
     </View>
 
      {username.length < 1 ? null : !usernameVerify && (
-      <Text style={styles.errorText}>Name should be more than one characters.</Text>
+      <Text style={styles.errorText}>Username must be 3-20 characters and contain only numbers,underscores or letters with atleast one letter present.</Text>
      )}
 
     <View style={styles.inputWithIcon}>  
@@ -207,7 +217,7 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
             />
           </TouchableOpacity>
           </View>
-          {password.length < 1 ? null : passwordVerify ? null : (<Text style= {styles.errorText}>Must be atleast 8 characters.Uppercase, Lowercase and numbers must be included. </Text>)}
+          {password.length < 1 ? null : passwordVerify ? null : (<Text style= {styles.errorText}>Must be atleast 8 characters long.Atleast one uppercase, lowercase, special character and number should be included. </Text>)}
         
       </View>
 
@@ -227,7 +237,7 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
 )}
 
       <TouchableOpacity style={styles.continueButton} onPress={handleSignup} disabled={loading}>
-        {loading ? <ActivityIndicator color="#6A0DAD" /> : <Text style={styles.buttonText}>Continue</Text>}
+        {loading ? (<ActivityIndicator color="#6A0DAD" /> ):( <Text style={styles.buttonText}>{!otpSent ? "Continue" : "Create Account"}</Text>)}
       </TouchableOpacity>
 
       <View style={styles.orContainer}>

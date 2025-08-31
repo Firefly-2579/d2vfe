@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, BackHandler} from 'react-native';
+import { View, Text, TouchableOpacity,ActivityIndicator, StyleSheet, BackHandler} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,30 +9,28 @@ import API_BASE_URL from "../config";
 
 const UD2Screen = () => {
 
-//navigation 
 const navigation = useNavigation();
 const route = useRoute();
 const { generatedAudioUri } = route.params || {};
   useEffect(() => {
       const backAction = () => {
-        if ( route.name === "UD2Screen") {  // Go back to AccountScreen
+        if ( route.name === "UD2Screen") {  
           navigation.replace("UploadDocumentScreen");
         } else {
-          navigation.goBack(); // default back behaviour for other screens 
+          navigation.goBack(); 
         }
-        return true; // Prevent default back navigation
+        return true; 
       };
   
       const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
   
-      return () => backHandler.remove(); // Cleanup the listener on unmount
+      return () => backHandler.remove(); 
     }, [navigation, route]);
-//navigation ends
-
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [sound, setSound] = useState(null);
-  // Function to play/pause audio
+  const [isLoading, setIsLoading] = useState(false);
+
   const handlePlayPause = async () => {
     if (!sound) {
       const { sound: newSound } = await Audio.Sound.createAsync(
@@ -55,6 +53,9 @@ const { generatedAudioUri } = route.params || {};
   };
 
 async function saveAudioToDatabase() {
+  
+  setIsLoading(true); 
+
   if (!generatedAudioUri) {
     alert("No audio available to save.");
     return;
@@ -85,11 +86,14 @@ async function saveAudioToDatabase() {
     if (result.success) {
       
       alert("Audio saved successfully!");
+      setIsLoading(false);
       navigation.navigate("Main", { screen: "My Files" });
     } else {
       alert("Failed to save audio!");
+      setIsLoading(false);
     }
   } catch (error) {
+    setIsLoading(false);
     console.error("Error saving audio:", error);
     alert("Error Saving Audio");
   }
@@ -107,7 +111,7 @@ async function saveAudioToDatabase() {
         
       </View>
        <TouchableOpacity style={styles.saveButton}  onPress={saveAudioToDatabase}>
-          <Text style={styles.buttonText}>Save to My Files</Text>
+        {isLoading ? (<ActivityIndicator color="white"/>) : (<Text style={styles.buttonText}>Save to My Files</Text>)}
         </TouchableOpacity>
      
     </LinearGradient>

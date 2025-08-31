@@ -14,13 +14,10 @@ const ResetPasswordScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
-
   const [newPasswordVisible, setNewPasswordVisible] = useState(false);
-const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const validatePasswordStrength = (password) => {
-    const regex =/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    const regex =/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
     return regex.test(password);
   };
 
@@ -38,7 +35,7 @@ const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     }
 
     if (!validatePasswordStrength(newPassword)) {
-      setMessage('Password must be at least 8 characters long and include uppercase, lowercase, and a number.');
+      setMessage('Password must be at least 8 characters long and include atleast one uppercase, lowercase,special character and a number.');
       return;
     }
 
@@ -53,12 +50,11 @@ const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
       if (response.data.status === 'success') {
   setMessage('Password has been reset successfully.');
   
-  // Keep loading spinner visible
   setTimeout(() => {
     setLoading(false);
     navigation.navigate('SigninScreen');
   }, 2000);
-  return; // Exit early to avoid running finally block
+  return; 
 } else {
         setMessage(response.data.message || 'Something went wrong.');
       }
@@ -66,7 +62,6 @@ const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
       console.error(error);
       setMessage('Unable to connect to the server.');
     } finally {
-  // Only stop loading if not already navigating after delay
   if (response?.data?.status !== 'success') {
     setLoading(false);
   }

@@ -7,7 +7,6 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Audio } from "expo-av";
 import API_BASE_URL from "../config";
-//import voice1Audio from "../assets/audio/voice_1.wav";
 
 const UploadDocumentScreen = ({ navigation }) => {
   const [fileSelected, setFileSelected] = useState(false);
@@ -19,17 +18,13 @@ const UploadDocumentScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState(null);
 
-  // Sample pre-trained voices (replace with actual voice names from your database)
   const voices = [{name: "Voice 1", file: require("../assets/audio/voice_1.wav")}, {name: "Voice 2", file: require("../assets/audio/voice_2.wav")},];
 
   const [playingVoice, setPlayingVoice] = useState(null);
 
-
-// Function to play a voice sample
 const playVoiceSample = async (voice) => {
   try {
     if (playingVoice === voice.name && sound) {
-      // If the same voice is playing, stop it
       await sound.stopAsync();
       setPlayingVoice(null);
       return;
@@ -40,7 +35,6 @@ const playVoiceSample = async (voice) => {
       setPlayingVoice(null);
     }
 
-    // Load the new sound
     const { sound: newSound } = await Audio.Sound.createAsync(
        voice.file, 
       { shouldPlay: true }
@@ -49,7 +43,6 @@ const playVoiceSample = async (voice) => {
     setSound(newSound);
     setPlayingVoice(voice.name);
 
-    // When the sound finishes, reset playing state
     newSound.setOnPlaybackStatusUpdate((status) => {
       if (status.didJustFinish) {
         setPlayingVoice(null);
@@ -60,7 +53,6 @@ const playVoiceSample = async (voice) => {
   }
 };
 
-// Function to stop playback when closing modal
 const closeModal = () => {
   if (sound) {
     sound.stopAsync();
@@ -96,7 +88,6 @@ const handleUpload = async () => {
   }
 };
 
-
   const handleVoiceSelect = (voice) => {
     setSelectedVoice(voice);
     setModalVisible(false);
@@ -116,7 +107,6 @@ const handleProcessDocument = async () => {
     let fileName = file.name || "document.pdf";
     let mimeType = file.mimeType || "application/pdf";
 
-    // Convert content:// URI to local file path if needed
     if (fileUri.startsWith("content://")) {
       const destPath = `${FileSystem.cacheDirectory}${fileName}`;
       await FileSystem.copyAsync({ from: fileUri, to: destPath });
@@ -126,8 +116,8 @@ const handleProcessDocument = async () => {
     const formData = new FormData();
     formData.append("file", { uri: fileUri, type: mimeType, name: fileName });
 
-    const endpoint =
-      selectedVoice === "Voice 1"
+    const endpoint = 
+      selectedVoice === "Voice 1" 
         ? `${API_BASE_URL}/process-doc-voice1`
         : `${API_BASE_URL}/process-doc-voice2`;
 
@@ -137,13 +127,15 @@ const handleProcessDocument = async () => {
       body: formData,
     });
 
-    if (!response.ok) throw new Error("Failed to process document");
+    if (!response.ok) {
+      throw new Error("Failed to process document");
+    }
 
     const blob = await response.blob();
 
-    // Convert blob to Base64 and save locally
     const fileReader = new FileReader();
     fileReader.onloadend = async () => {
+      try {
       const base64Data = fileReader.result.split(",")[1];
 
       const timestamp = Date.now();
@@ -155,17 +147,21 @@ const handleProcessDocument = async () => {
 
       setIsLoading(false);
 
-      // Navigate to UD2Screen with the generated audio URI
       navigation.navigate("UD2Screen", {
         fileName,
         selectedVoice,
-        generatedAudioUri, // updated name
+        generatedAudioUri, 
       });
+      } catch (error) {
+        setIsLoading(false);
+         Alert.alert("Error", error.message || "Failed to generate audio");
+         console.error("Processing error:", error);
+      }   
     };
 
-    fileReader.readAsDataURL(blob);
+   fileReader.readAsDataURL(blob);
 
-  } catch (error) {
+   } catch (error) {
     setIsLoading(false);
     Alert.alert("Error", error.message || "An error occurred while processing the document.");
     console.error("Processing error:", error);
@@ -177,7 +173,7 @@ const handleProcessDocument = async () => {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Upload Your Document</Text>
         <Text style={styles.instructions}>
-          Convert your documents into audio! Upload a document, and we’ll help you bring it to life with audio narration.
+          Convert your documents into audio! Upload a document, and we’ll help you bring it to life with audio narration.we request you to be patient as it may take few minutes to process file.
           {"\n\n"}Supported formats: PDF, DOCX, TXT{"\n\n"}Start by selecting a file from your device.
         </Text>
 
@@ -200,23 +196,17 @@ const handleProcessDocument = async () => {
           </TouchableOpacity>
         )}
 
-        
-
         {fileSelected && selectedVoice && (
-          <TouchableOpacity style={[styles.processButton, isLoading && {backgroundColor: "#ccc"} ]} onPress={handleProcessDocument} disabled={isLoading}>
+          <TouchableOpacity style={[styles.processButton, isLoading && {backgroundColor: "#ccc"}, ]} onPress={handleProcessDocument} disabled={isLoading}>
 
         {isLoading ? (
           <ActivityIndicator size="small" color="#fff" />
            ) : (
-           <>
-           <Ionicons name="play-circle-outline" size={24} color="#FFF" style={{marginRight: 10}}/>
-            <Text style={styles.buttonText}>Process Document</Text>
-            </>
+          <Text style={styles.buttonText}>Process Document</Text>   
         )} 
             </TouchableOpacity>
         )}
 
-        {/* Modal for selecting voice */}
         <Modal visible={modalVisible} animationType="slide" transparent={true} onRequestClose={() => setModalVisible(false)}>
   <View style={styles.modalBackdrop}>
     <View style={styles.modalContent}>
@@ -258,7 +248,6 @@ const handleProcessDocument = async () => {
   );
 };
 
-// Styles with customizations to match the app's warm and welcoming theme
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -274,13 +263,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#4B0082", // Purple shade for a welcoming tone
+    color: "#4B0082", 
     textAlign: "center",
     marginBottom: 20,
   },
   instructions: {
     fontSize: 16,
-    color: "#4B0082", // Purple instructions text
+    color: "#4B0082", 
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 30,
@@ -290,7 +279,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#4B0082", // Dark purple background
+    backgroundColor: "#4B0082", 
     padding: 15,
     borderRadius: 10,
     shadowColor: "#000",
@@ -307,9 +296,14 @@ processButton: {
     padding: 15,
     borderRadius: 10,
     marginTop: 30,
+    shadowColor:"#000",
+    shadowOffset:{width: 0, height: 4},
+    shadowOpacity:0.2,
+    shadowRadius:6,
+    minWidth: 180,
 },
   buttonText: {
-    color: "#FFF", // White text
+    color: "#FFF", 
     fontSize: 16,
     fontWeight: "600",
   },
@@ -319,20 +313,20 @@ processButton: {
   },
   feedbackText: {
     fontSize: 16,
-    color: "green", // Green color for feedback
+    color: "green", 
     marginTop: 5,
   },
   modalBackdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark backdrop
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
   },
   modalContent: {
-    backgroundColor: "#FFF", // White background for the modal
+    backgroundColor: "#FFF", 
     padding: 20,
-    borderTopLeftRadius: 20, // Rounded top corners
+    borderTopLeftRadius: 20, 
     borderTopRightRadius: 20,
-    shadowColor: "#000", // Shadow for the modal content
+    shadowColor: "#000", 
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
@@ -342,7 +336,7 @@ processButton: {
     fontWeight: "600",
     marginBottom: 20,
     textAlign: "center",
-    color: "#4B0082", // Purple title
+    color: "#4B0082", 
   },
   voiceOptions: {
     justifyContent: "center",
@@ -351,8 +345,8 @@ processButton: {
     paddingHorizontal: 45,
   },
   voiceButton: {
-    backgroundColor: "#D3D3D3", // Light gray background for buttons
-    borderRadius: 50, // Circular buttons
+    backgroundColor: "#D3D3D3", 
+    borderRadius: 50,
     paddingVertical: 15,
     paddingHorizontal: 25,
     margin: 10,
@@ -360,15 +354,15 @@ processButton: {
     alignItems: "center",
   },
   selectedVoiceButton: {
-    backgroundColor: "#4B0082", // Dark purple for selected voice button
+    backgroundColor: "#4B0082", 
   },
   voiceButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#FFF", // White text for the voice button
+    color: "#FFF", 
   },
   closeButton: {
-    backgroundColor: "#4B0082", // Purple background
+    backgroundColor: "#4B0082", 
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 20,
@@ -378,7 +372,7 @@ processButton: {
   },
   
   closeButtonText: {
-    color: "#FFF", // White text
+    color: "#FFF", 
     fontSize: 16,
     fontWeight: "600",
   },

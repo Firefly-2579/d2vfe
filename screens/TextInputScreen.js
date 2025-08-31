@@ -14,7 +14,6 @@ import {
 import API_BASE_URL from "../config";
 import * as FileSystem from "expo-file-system";
 import { ActivityIndicator } from "react-native";
-
 import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,7 +25,8 @@ const TextInputScreen = ({ navigation, route }) => {
   const audioUri = route.params?.audioUri || null;
   const [isLoading, setIsLoading] = useState(false);
 
-  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  //const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  const charCount = text.length;
 
   useEffect(() => {
     return () => {
@@ -42,10 +42,8 @@ const TextInputScreen = ({ navigation, route }) => {
         { uri: audioUri },
         { shouldPlay: true }
       );
-
       setSound(playbackObject);
       setIsPlaying(true);
-
       playbackObject.setOnPlaybackStatusUpdate((status) => {
         if (status.didJustFinish) {
           setIsPlaying(false);
@@ -71,10 +69,14 @@ async function uploadData() {
     return;
   }
 
-  if (wordCount > 200) {
+  if (charCount > 150) {
+  alert("Text exceeds 150-character limit.");
+  return;
+  }
+/*  if (wordCount > 200) {
     alert("Text exceeds 200-word limit.");
     return;
-  }
+  }*/
 
   const formData = new FormData();
   formData.append("speaker_wav", {
@@ -85,8 +87,7 @@ async function uploadData() {
   formData.append("text", text);
 
   try {
-    setIsLoading(true); // Start loading
-
+    setIsLoading(true);
     const response = await fetch(`${API_BASE_URL}/process-voice`, {
       method: "POST",
       body: formData,
@@ -110,7 +111,7 @@ async function uploadData() {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      setIsLoading(false); // Stop loading
+      setIsLoading(false); 
       navigation.navigate("VCOutputScreen", {
         clonedAudioUri: fileUri,
         clonedText: text,
@@ -121,17 +122,15 @@ async function uploadData() {
   } catch (error) {
     console.error("Upload error", error);
     alert("Failed to process audio");
-    setIsLoading(false); // Stop loading on error
+    setIsLoading(false); 
   }
 }
-
-
   return (
   <LinearGradient colors={["#EAD1DC", "#DCC6E0", "#C7CEEA"]} style={styles.container}>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // ✅ Corrected logic
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} // ✅ Helps prevent overlap
+      behavior={Platform.OS === "ios" ? "padding" : "height"} 
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} 
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
@@ -172,15 +171,15 @@ async function uploadData() {
                 value={text}
                 onChangeText={setText}
               />
-              <Text style={styles.wordCount}>{wordCount} / 200</Text>
+              <Text style={styles.wordCount}>{charCount} / 150</Text>
             </View>
 <TouchableOpacity
   style={[
     styles.uploadButton,
-    (wordCount > 200 || isLoading) && { backgroundColor: "#ccc" },
+    (charCount > 150 || isLoading) && { backgroundColor: "#ccc" },
   ]}
   onPress={uploadData}
-  disabled={wordCount > 200 || isLoading}
+  disabled={charCount > 150 || isLoading}
 >
   {isLoading ? (
     <ActivityIndicator size="small" color="#fff" />
@@ -221,16 +220,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     marginTop: 10,
   },
-  
   scrollContainer: {
     flexGrow: 1,
   },
-
   audioControls: {
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 20,
-    
   },
   button: {
     backgroundColor: "#4B0082",
@@ -269,8 +265,8 @@ const styles = StyleSheet.create({
     color: "#4B0082",
     fontSize: 16,
     minHeight: 120,
-    maxHeight: 200, // ✅ limit maximum height so input doesn't expand endlessly
-    textAlignVertical: "top", // ✅ keeps text aligned to top
+    maxHeight: 200, 
+    textAlignVertical: "top", 
   },
   wordCount: {
     position: "absolute",

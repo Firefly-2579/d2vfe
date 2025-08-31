@@ -45,6 +45,7 @@ const VerifyCodeScreen = () => {
 
       if (response.data.status === "success") {
         setTimeout(()=> {
+        setLoading(false);
         navigation.navigate("ResetPasswordScreen", { email });
         },2000);
       } else {

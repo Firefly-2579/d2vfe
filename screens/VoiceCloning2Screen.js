@@ -11,27 +11,20 @@ const VoiceCloning2Screen = () => {
 
   useEffect(() => {
     const backAction = () => {
-
-      if ( route.name === "VoiceCloning2Screen") {  // Go back to VoiceCloningScreen
+      if ( route.name === "VoiceCloning2Screen") {  
         navigation.replace("VoiceCloningScreen");
       } else {
-        navigation.goBack(); // default back behaviour for other screens 
+        navigation.goBack();  
       }
-      return true; // Prevent default back navigation
+      return true; 
     };
-
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () => backHandler.remove(); // Cleanup the listener on unmount
+    return () => backHandler.remove(); 
   }, [navigation, route]);
 
-   
-  
   return (
     <LinearGradient colors={['#EAD1DC', '#DCC6E0', '#C7CEEA']} style={styles.container}>
       <StatusBar barStyle="light-content" />
-      
-     
       <View style={styles.body}>
         <View style={styles.voiceClone}>
           <Text style={styles.voiceCloneText}>Cloning Your Voice</Text>
@@ -53,7 +46,6 @@ const VoiceCloning2Screen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      
     </LinearGradient>
   );
 };

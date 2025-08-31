@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, TouchableOpacity, Image, } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, ActivityIndicator,TouchableOpacity, Image, } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_BASE_URL from "../config";
@@ -8,6 +8,7 @@ const SigninScreen = ({ navigation }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   function handlesignin() {
     console.log(identifier, password);
@@ -18,6 +19,7 @@ const SigninScreen = ({ navigation }) => {
     };
   
     if (identifier && password) {
+      setLoading(true);
       axios
         .post(`${API_BASE_URL}/signin-user`, userData)
         .then(res => {
@@ -26,13 +28,16 @@ const SigninScreen = ({ navigation }) => {
             Alert.alert("Sign-in Successful!");
             AsyncStorage.setItem("token", res.data.data);
             AsyncStorage.setItem("isSignedIn", JSON.stringify(true));
+            setLoading(false);
             navigation.navigate("HomeScreen");
           } else {
+            setLoading(false);
             Alert.alert(  res.data.message );
           }
         })
         .catch(error => {
           console.log(error);
+          setLoading(false);
           Alert.alert("Error", "An error occurred during sign-in. Please try again.");
         });
     } else {
@@ -40,15 +45,12 @@ const SigninScreen = ({ navigation }) => {
     }
   }
 
-
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>Sign In To Account</Text>
       </View>
 
-      {/* Input Fields */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -83,25 +85,20 @@ const SigninScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Continue Button */}
       <TouchableOpacity 
          style={styles.continueButton}
-         onPress={() => handlesignin()}  // Replace with your Sign Up navigation
+         onPress={() => handlesignin()} 
+         disabled={loading}
        >
-       <Text style={styles.buttonText}>Continue</Text>
-        
+        {loading ? ( <ActivityIndicator color="#6A0DAD"/>):( <Text style={styles.buttonText}>Continue</Text> )}        
       </TouchableOpacity>
 
-      {/* OR Separator */}
       <View style={styles.orContainer}>
         <View style={styles.line} />
         <Text style={styles.orText}>OR</Text>
         <View style={styles.line} />
       </View>
 
-     
-
-      {/* Sign-Up Prompt */}
       <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
         <Text style={styles.signupText}>
           Are you a new user? <Text style={styles.signupLink}>Signup</Text>

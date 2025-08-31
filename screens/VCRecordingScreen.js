@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, BackHandler, ScrollView  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Audio } from 'expo-av';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ScrollView } from 'react-native-web';
 
 const VCRecordingScreen = () => {
   const navigation = useNavigation();
@@ -29,8 +28,8 @@ const VCRecordingScreen = () => {
       return true;
     };
 
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-    return () => backHandler.remove();
+  const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+  return () => backHandler.remove();
   }, [navigation, route]);
 
   useEffect(() => {
@@ -144,7 +143,7 @@ const VCRecordingScreen = () => {
 
   return (
     <LinearGradient colors={['#EAD1DC', '#DCC6E0', '#C7CEEA']} style={styles.container}>
-    <ScrollView>
+    
       <View style={styles.body}>
         <Text style={styles.headerText}>
           Please record your voice using any text of your own choice or from the example text below for at least 6 or more seconds
@@ -158,7 +157,6 @@ const VCRecordingScreen = () => {
           </Text>
         </View>
 
-        {/* Record / Record Again */}
         <TouchableOpacity style={styles.recordButton} onPress={handleRecordingPress}>
           <Ionicons name={isRecording ? "stop-circle-outline" : "mic-outline"} size={50} color="#fff" />
           <Text style={styles.recordText}>
@@ -166,12 +164,10 @@ const VCRecordingScreen = () => {
           </Text>
         </TouchableOpacity>
 
-        {/* Recording Duration */}
         {isRecording && (
           <Text style={styles.recordingDuration}>Recording Time: {formatTime(recordingDuration)}</Text>
         )}
 
-        {/* Audio Playback & Duration */}
         {audioUri && !isRecording && (
           <>
             <View style={styles.audioControls}>
@@ -190,7 +186,7 @@ const VCRecordingScreen = () => {
           </>
         )}
       </View>
-      </ScrollView>
+      
     </LinearGradient>
   );
 };
@@ -203,37 +199,88 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerText: {
-    backgroundColor: '#FFFFFF', color: '#4B0082',    padding: 15,    borderRadius: 10,    fontSize: 16,    textAlign: 'center',    lineHeight: 22,    fontWeight: '600',    shadowColor: '#000',    shadowOffset: { width: 0, height: 2 },    shadowOpacity: 0.1,    shadowRadius: 4,
+    backgroundColor: '#FFFFFF', 
+    color: '#4B0082',    
+    padding: 15,    
+    borderRadius: 10,    
+    fontSize: 16,    
+    textAlign: 'center',    
+    lineHeight: 22,    
+    fontWeight: '600',    
+    shadowColor: '#000',    
+    shadowOffset: { width: 0, height: 2 },    
+    shadowOpacity: 0.1,    
+    shadowRadius: 4,
   },
   exampleContainer: {
-    backgroundColor: '#FFFFFF',    padding: 15,    borderRadius: 10,    shadowColor: '#000',    shadowOffset: { width: 0, height: 4 },    shadowOpacity: 0.1,    shadowRadius: 6,
+    backgroundColor: '#FFFFFF',    
+    padding: 15,    
+    borderRadius: 10,    
+    shadowColor: '#000',    
+    shadowOffset: { width: 0, height: 4 },    
+    shadowOpacity: 0.1,    
+    shadowRadius: 6,
   },
   exampleText: {
-    color: '#4B0082',    fontSize: 16,    lineHeight: 24,    textAlign: 'justify',
+    color: '#4B0082',    
+    fontSize: 16,    
+    lineHeight: 24,    
+    textAlign: 'justify',
   },
   recordButton: {
-    backgroundColor: '#4B0082',    paddingVertical: 20,    borderRadius: 15,    alignItems: 'center',    shadowColor: '#000',    shadowOffset: { width: 0, height: 4 },    shadowOpacity: 0.2,    shadowRadius: 6,
+    backgroundColor: '#4B0082',    
+    paddingVertical: 20,    
+    borderRadius: 15,    
+    alignItems: 'center',    
+    shadowColor: '#000',    
+    shadowOffset: { width: 0, height: 4 },    
+    shadowOpacity: 0.2,    
+    shadowRadius: 6,
   },
   recordText: {
-    color: '#FFFFFF',    fontSize: 16,    fontWeight: '600',    textTransform: 'uppercase',    marginTop: 5,
+    color: '#FFFFFF',    
+    fontSize: 16,    
+    fontWeight: '600',    
+    textTransform: 'uppercase',    
+    marginTop: 5,
   },
   recordingDuration: {
-    color: '#4B0082',    fontSize: 18,    fontWeight: '500',    textAlign: 'center',    marginTop: 10,
+    color: '#4B0082',    
+    fontSize: 18,    
+    fontWeight: '500',    
+    textAlign: 'center',    
+    marginTop: 10,
   },
   audioControls: {
-    flexDirection: 'row',    justifyContent: 'center',    marginTop: 20,
+    flexDirection: 'row',    
+    justifyContent: 'center',    
+    marginTop: 20,
   },
   button: {
-    backgroundColor: '#4B0082',    padding: 15,    borderRadius: 10,    alignItems: 'center',    marginHorizontal: 10,
+    backgroundColor: '#4B0082',    
+    padding: 15,    
+    borderRadius: 10,    
+    alignItems: 'center',    
+    marginHorizontal: 10,
   },
   buttonText: {
-    color: '#FFFFFF',    fontSize: 14,    fontWeight: '600',    marginTop: 5,
+    color: '#FFFFFF',    
+    fontSize: 14,    
+    fontWeight: '600',    
+    marginTop: 5,
   },
   nextButton: {
-    backgroundColor: '#6A0DAD',    padding: 15,    borderRadius: 10,    marginTop: 20,    alignItems: 'center',
+    backgroundColor: '#6A0DAD',    
+    padding: 15,    
+    borderRadius: 10,    
+    marginTop: 20,    
+    alignItems: 'center',
   },
   nextButtonText: {
-    color: '#FFFFFF',    fontSize: 16,    fontWeight: 'bold',    textTransform: 'uppercase',
+    color: '#FFFFFF',    
+    fontSize: 16,    
+    fontWeight: 'bold',    
+    textTransform: 'uppercase',
   },
 });
 

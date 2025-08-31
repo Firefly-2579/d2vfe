@@ -5,18 +5,17 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 const SplashScreen = ({ navigation }) => {
   useEffect(() => {
-    // Navigate to the next screen after 20 seconds
     const timer = setTimeout(() => {
-      navigation.replace('WelcomeScreen'); // Replace with your desired screen
+      navigation.replace('WelcomeScreen'); 
     }, 4000);
-    return () => clearTimeout(timer); // Cleanup the timer
+    return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
     <View style={styles.container}>
       <Image
         source={require('../assets/logo.webp')} 
-        style={styles.backgroundImage} // Make the logo fill the background
+        style={styles.backgroundImage} 
       />
       <View style={styles.overlay}>
         <View style={styles.textContainer}>
@@ -31,9 +30,9 @@ const SplashScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end', // Align content at the bottom of the screen
+    justifyContent: 'flex-end', 
     alignItems: 'center',
-    backgroundColor: '#6A0DAD', // Purple background
+    backgroundColor: '#6A0DAD', 
   },
   backgroundImage: {
     position: 'absolute',
@@ -43,26 +42,26 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     height: '100%',
-    resizeMode: 'cover', // Ensure the image fills the screen
+    resizeMode: 'cover', 
   },
   overlay: {
     alignItems: 'center',
-    paddingBottom: 40, // Space between the content and the bottom
+    paddingBottom: 40, 
   },
   title: {
-    fontSize: 24, // Title size
+    fontSize: 24, 
     color: '#FFFFFF',
-    marginBottom: 10, // Space between microphone and title
+    marginBottom: 10, 
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16, // Subtitle size
+    fontSize: 16, 
     color: '#FFFFFF',
     textAlign: 'center',
-    marginTop: 10, // Space above subtitle
+    marginTop: 10, 
   },
   textContainer: {
-    flexDirection: 'row', // Align microphone and text horizontally
+    flexDirection: 'row', 
     justifyContent: 'center',
     alignItems: 'center',
   },

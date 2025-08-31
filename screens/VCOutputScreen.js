@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,10 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_BASE_URL from "../config";
 
 const VCOutputScreen = ({ route, navigation }) => {
-  const { clonedAudioUri, clonedText } = route.params || {}; // Get cloned audio & text from server response
+  const { clonedAudioUri, clonedText } = route.params || {}; 
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
 
 async function togglePlayback() {
   if (!clonedAudioUri) return;
@@ -36,8 +36,10 @@ async function togglePlayback() {
   }
 }
 
-  // Save cloned audio to the database
   async function saveAudioToDatabase() {
+
+    setIsLoading(true); 
+    
     if (!clonedAudioUri) {
       alert("No audio available to save.");
       return;
@@ -67,11 +69,14 @@ formData.append("file", {
       const result = await response.json();
       if(result.success){
         alert("Audio saved successfully!");
+        setIsLoading(false);
         navigation.navigate("Main", { screen: "My Files" });
       }else{
         alert("Failed to save audio!");
+        setIsLoading(false);
       }
     }catch(error){
+      setIsLoading(false);
       console.error("Error saving audio:", error);
       alert("Error Saving Audio");
     }
@@ -101,7 +106,7 @@ formData.append("file", {
       </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={saveAudioToDatabase}>
-        <Text style={styles.buttonText}>Save to My Files</Text>
+        {isLoading ? (<ActivityIndicator color="white"/>) : (<Text style={styles.buttonText}>Save to My Files</Text>)}
       </TouchableOpacity>
     </LinearGradient>
   );

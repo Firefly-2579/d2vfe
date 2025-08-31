@@ -9,13 +9,12 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const backAction = () => {
-      navigation.navigate("Main", { screen: "Voice Cloning" }); // Corrected name
-      return true; // Prevent the default back action
+      navigation.navigate("Main", { screen: "Voice Cloning" }); 
+      return true; 
     };
 
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () => backHandler.remove(); // Cleanup the event listener on unmount
+    return () => backHandler.remove(); 
   }, [navigation]);
 
   return (
@@ -39,7 +38,7 @@ const HomeScreen = () => {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Main", { screen: "Voice Cloning" })} // Corrected name
+          onPress={() => navigation.navigate("Main", { screen: "Voice Cloning" })} 
         >
           <View style={styles.iconWrapper}>
             <Ionicons name="mic-outline" size={28} color="#4B0082" />
@@ -49,7 +48,7 @@ const HomeScreen = () => {
 
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Main", { screen: "Upload Document" })} // Corrected name
+          onPress={() => navigation.navigate("Main", { screen: "Upload Document" })} 
         >
           <View style={styles.iconWrapper}>
             <Ionicons name="cloud-upload-outline" size={28} color="#4B0082" />
@@ -59,7 +58,7 @@ const HomeScreen = () => {
 
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Main", { screen: "My Files" })} // Corrected name
+          onPress={() => navigation.navigate("Main", { screen: "My Files" })} 
         >
           <View style={styles.iconWrapper}>
             <Ionicons name="folder-outline" size={28} color="#4B0082" />
@@ -69,7 +68,7 @@ const HomeScreen = () => {
 
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate("Main", { screen: "My Account" })} // Corrected name
+          onPress={() => navigation.navigate("Main", { screen: "My Account" })} 
         >
           <View style={styles.iconWrapper}>
             <Ionicons name="person-outline" size={28} color="#4B0082" />
