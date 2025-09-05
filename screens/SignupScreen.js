@@ -41,7 +41,7 @@ const SignupScreen = () => {
     setUsername(nameVar);
     setUsernameVerify(false)
     const usernameRegex = /^(?=.{3,20}$)(?=.*[A-Za-z])[A-Za-z0-9_]+$/;
-    if ((nameVar.length >= 3) &&(usernameRegex.test(nameVar))) {
+    if ((nameVar.length > 2) &&(usernameRegex.test(nameVar))) {
       setUsernameVerify(true);
     } else {
       setUsernameVerify(false);
@@ -167,7 +167,7 @@ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVar)){
        value={username}
        onChangeText={handleName}  
       />
-     {username.length < 1 ? null : usernameVerify ? (
+     {username.length < 1 ? null : usernameVerify? (
        <Feather name="check-circle" color="green" size={20} style={styles.iconRight} />
         ) : (
        <Error name="error" color="red" size={20} style={styles.iconRight} />
