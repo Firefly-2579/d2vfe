@@ -142,8 +142,11 @@ async function signOut() {
         const response = await axios.post(`${API_BASE_URL}/update-profile`, { token, username });
         if (response.data.success) {
           Alert.alert('Success', 'Username updated.');
+          const refreshed = await axios.post(`${API_BASE_URL}/userdata`, { token });
+          setUserData(refreshed.data.data);
+          setUsername(refreshed.data.data.username);
         } else {
-          Alert.alert('Error', response.data.message || 'Failed to update username.');
+          Alert.alert('Error', response.data.message);
           return;
         }
       }
@@ -155,7 +158,7 @@ async function signOut() {
       setOldPasswordVisible(false);
     } catch (err) {
       console.error(err);
-      Alert.alert('Error', 'Failed to save changes.');
+      Alert.alert('Error', 'Username already Exists.Failed to save changes.');
     }
   };
 
