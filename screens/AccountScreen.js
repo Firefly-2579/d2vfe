@@ -52,7 +52,7 @@ const AccountScreen = () => {
 
   const usernameRegex = /^(?=.{3,20}$)(?=.*[A-Za-z])[A-Za-z0-9_]+$/;
 
-  if (nameVar.length >= 3 && usernameRegex.test(nameVar)) {
+  if ((nameVar.length > 2) && (usernameRegex.test(nameVar))) {
     setUsernameVerify(true);
   }
 }
